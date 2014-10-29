@@ -215,6 +215,7 @@ class Pdo implements
     public function checkUserCredentials($username, $password)
     {
         if ($user = $this->getUser($username)) {
+//echo "user found => " . $user . "\n";
             return $this->checkPassword($user, $password);
         }
 
@@ -299,37 +300,42 @@ class Pdo implements
     // plaintext passwords are bad!  Override this for your application
     protected function checkPassword($user, $password)
     {
-        return $user['password'] == sha1($password);
+        //return $user['password'] == sha1($password);
+        return $user['password'] == $password;
     }
 
     public function getUser($username)
     {
+        //echo "user_table = " . $this->config['user_table'];
         $stmt = $this->db->prepare($sql = sprintf('SELECT * from %s where username=:username', $this->config['user_table']));
         $stmt->execute(array('username' => $username));
 
         if (!$userInfo = $stmt->fetch()) {
+            //echo "return false exec";
             return false;
         }
 
+        /*echo "" . $username . "\n";
+        var_dump($userInfo);*/
         // the default behavior is to use "username" as the user_id
         return array_merge(array(
             'user_id' => $username
         ), $userInfo);
     }
 
-    public function setUser($username, $password, $firstName = null, $lastName = null)
+    public function setUser($username, $password, $firstName = null, $lastName = null, $role = null)
     {
         // do not store in plaintext
-        $password = sha1($password);
+        //$password = sha1($password);
 
         // if it exists, update it.
         if ($this->getUser($username)) {
-            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET password=:password, first_name=:firstName, last_name=:lastName where username=:username', $this->config['user_table']));
+            $stmt = $this->db->prepare($sql = sprintf('UPDATE %s SET password=:password, first_name=:firstName, last_name=:lastName, role=:role where username=:username', $this->config['user_table']));
         } else {
-            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (username, password, first_name, last_name) VALUES (:username, :password, :firstName, :lastName)', $this->config['user_table']));
+            $stmt = $this->db->prepare(sprintf('INSERT INTO %s (username, password, first_name, last_name, role) VALUES (:username, :password, :firstName, :lastName, :role)', $this->config['user_table']));
         }
 
-        return $stmt->execute(compact('username', 'password', 'firstName', 'lastName'));
+        return $stmt->execute(compact('username', 'password', 'firstName', 'lastName', 'role'));
     }
 
     /* ScopeInterface */
@@ -443,6 +449,14 @@ class Pdo implements
         }
 
         return 'RS256';
+    }
+
+    /**
+    *   Newly added by Sanel Mesinovic
+    */
+    public function delUser($username){
+        $stmt = $this->db->prepare('DELETE FROM oauth_users WHERE username = :username');
+        $stmt->execute(array('username' => $username));
     }
 
     /**

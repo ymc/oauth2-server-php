@@ -15,9 +15,10 @@ interface AccessTokenInterface extends ResponseTypeInterface
      * @param $user_id                  user ID associated with the access token
      * @param $scope                    OPTONAL scopes to be stored in space-separated string.
      * @param bool $includeRefreshToken if true, a new refresh_token will be added to the response
+     * @param $role                     specifies the role of the user
      *
      * @see http://tools.ietf.org/html/rfc6749#section-5
      * @ingroup oauth2_section_5
      */
-    public function createAccessToken($client_id, $user_id, $scope = null, $includeRefreshToken = true);
+    public function createAccessToken($client_id, $user_id, $scope = null, $includeRefreshToken = true, $role);
 }

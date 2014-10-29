@@ -22,6 +22,10 @@ class TokenController implements TokenControllerInterface
     protected $scopeUtil;
     protected $clientStorage;
 
+    private function printToLog($msg){
+        error_log($msg . PHP_EOL, 3, "/tmp/testlog.dat");
+    }
+
     public function __construct(AccessTokenInterface $accessToken, ClientInterface $clientStorage, array $grantTypes = array(), ClientAssertionTypeInterface $clientAssertionType = null, ScopeInterface $scopeUtil = null)
     {
         if (is_null($clientAssertionType)) {
@@ -74,6 +78,7 @@ class TokenController implements TokenControllerInterface
      */
     public function grantAccessToken(RequestInterface $request, ResponseInterface $response)
     {
+        //error_log("Executing grantAccessToken ..." . PHP_EOL, 3, "/tmp/testlog.dat");
         if (strtolower($request->server('REQUEST_METHOD')) != 'post') {
             $response->setError(405, 'invalid_request', 'The request method must be POST when requesting an access token', '#section-3.2');
             $response->addHttpHeaders(array('Allow' => 'POST'));
@@ -90,6 +95,10 @@ class TokenController implements TokenControllerInterface
 
             return null;
         }
+
+        /*echo "GRANT TYPE ID = " . $grantTypeIdentifier;
+        echo "this->grantTypes[$grantTypeIdentifier] = " . $this->grantTypes[$grantTypeIdentifier];
+        return;*/
 
         if (!isset($this->grantTypes[$grantTypeIdentifier])) {
             /* TODO: If this is an OAuth2 supported grant type that we have chosen not to implement, throw a 501 Not Implemented instead */
@@ -198,7 +207,9 @@ class TokenController implements TokenControllerInterface
             $requestedScope = $defaultScope;
         }
 
-        return $grantType->createAccessToken($this->accessToken, $clientId, $grantType->getUserId(), $requestedScope);
+        //$this->printToLog("ROLE inside TokenController before createAccessToken = " . $grantType->getRole());
+
+        return $grantType->createAccessToken($this->accessToken, $clientId, $grantType->getUserId(), $requestedScope, $grantType->getRole());
     }
 
     /**

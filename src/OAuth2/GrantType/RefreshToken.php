@@ -81,7 +81,12 @@ class RefreshToken implements GrantTypeInterface
         return isset($this->refreshToken['scope']) ? $this->refreshToken['scope'] : null;
     }
 
-    public function createAccessToken(AccessTokenInterface $accessToken, $client_id, $user_id, $scope)
+    public function getRole()
+    {
+        return null;
+    }
+
+    public function createAccessToken(AccessTokenInterface $accessToken, $client_id, $user_id, $scope, $role)
     {
         /*
          * It is optional to force a new refresh token when a refresh token is used.
@@ -89,7 +94,7 @@ class RefreshToken implements GrantTypeInterface
          * @see http://tools.ietf.org/html/rfc6749#section-6
          */
         $issueNewRefreshToken = $this->config['always_issue_new_refresh_token'];
-        $token = $accessToken->createAccessToken($client_id, $user_id, $scope, $issueNewRefreshToken);
+        $token = $accessToken->createAccessToken($client_id, $user_id, $scope, $issueNewRefreshToken, $role);
 
         if ($issueNewRefreshToken) {
             $this->storage->unsetRefreshToken($this->refreshToken['refresh_token']);

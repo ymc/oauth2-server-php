@@ -39,6 +39,10 @@ class AccessToken implements AccessTokenInterface
         ), $config);
     }
 
+    private function printToLog($msg){
+        error_log($msg . PHP_EOL, 3, "/tmp/testlog.dat");
+    }
+
     public function getAuthorizeResponse($params, $user_id = null)
     {
         // build the URL to redirect to
@@ -68,17 +72,19 @@ class AccessToken implements AccessTokenInterface
      * @param $user_id                  user ID associated with the access token
      * @param $scope                    OPTIONAL scopes to be stored in space-separated string.
      * @param bool $includeRefreshToken if true, a new refresh_token will be added to the response
+     * @param $role                     specifies the role of the user
      *
      * @see http://tools.ietf.org/html/rfc6749#section-5
      * @ingroup oauth2_section_5
      */
-    public function createAccessToken($client_id, $user_id, $scope = null, $includeRefreshToken = true)
+    public function createAccessToken($client_id, $user_id, $scope = null, $includeRefreshToken = true, $role)
     {
         $token = array(
             "access_token" => $this->generateAccessToken(),
             "expires_in" => $this->config['access_lifetime'],
             "token_type" => $this->config['token_type'],
-            "scope" => $scope
+            "scope" => $scope,
+            "role" => $role
         );
 
         $this->tokenStorage->setAccessToken($token["access_token"], $client_id, $user_id, $this->config['access_lifetime'] ? time() + $this->config['access_lifetime'] : null, $scope);
