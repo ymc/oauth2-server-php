@@ -22,5 +22,6 @@
         "predis/predis": "Required to use the Redis storage engine",
         "thobbs/phpcassa": "Required to use the Cassandra storage engine",
         "aws/aws-sdk-php": "Required to use the DynamoDB storage engine"
-    }
+    },
+    "target-dir": "ymc/test"
 }
