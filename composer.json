@@ -22,5 +22,9 @@
         "predis/predis": "Required to use the Redis storage engine",
         "thobbs/phpcassa": "Required to use the Cassandra storage engine",
         "aws/aws-sdk-php": "Required to use the DynamoDB storage engine"
+    },
+    "scripts": {
+        "post-update-cmd": "mv ymc/oauth2-server-php/ ymc/ymc-oauth2-server/",
+        "post-install-cmd": "mv ymc/oauth2-server-php/ ymc/ymc-oauth2-server/"
     }
 }
